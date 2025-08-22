@@ -6,11 +6,10 @@ import genniralLogo from './assets/logo.png'
 
 function LoadingScreen() {
   const navigate = useNavigate()
-  const [loadingProgress, setLoadingProgress] = useState(0)
   const [logoOpacity, setLogoOpacity] = useState(0)
-  const [textVisible, setTextVisible] = useState(false)
-  const [blurAmount, setBlurAmount] = useState(5) // Initial blur amount
-  const [blurInterval, setBlurInterval] = useState(1000) // Start with 1 second
+  const [blurAmount, setBlurAmount] = useState(5)
+  const [taglineVisible, setTaglineVisible] = useState(false)
+  const [indicatorProgress, setIndicatorProgress] = useState(0)
 
   useEffect(() => {
     // Fade in logo animation
@@ -18,175 +17,242 @@ function LoadingScreen() {
       setLogoOpacity(1)
     }, 300)
 
-    // Show loading text after logo appears
-    const textTimer = setTimeout(() => {
-      setTextVisible(true)
-    }, 800)
+    // Show tagline after logo appears
+    const taglineTimer = setTimeout(() => {
+      setTaglineVisible(true)
+    }, 1200)
 
-    // Simulate loading progress
-    const loadingInterval = setInterval(() => {
-      setLoadingProgress(prev => {
-        const nextProgress = prev + Math.random() * 15
-        return nextProgress > 100 ? 100 : nextProgress
-      })
-    }, 400)
+    // Animate indicator dots
+    const indicatorInterval = setInterval(() => {
+      setIndicatorProgress(prev => (prev + 1) % 4)
+    }, 500)
 
-    // Blur/unblur effect with increasing interval
-    let currentInterval = blurInterval
-    let intervalCounter = 0
-    
-    const blurEffect = setInterval(() => {
-      setBlurAmount(prev => (prev === 0 ? 5 : 0)) // Toggle between blurred and clear
-      
-      // Increase interval duration gradually up to 10 seconds
-      intervalCounter++
-      if (intervalCounter % 2 === 0 && currentInterval < 10000) {
-        currentInterval += 1000 // Increase by 1 second
-        setBlurInterval(currentInterval)
-        clearInterval(blurEffect)
-        
-        // Restart interval with new duration
-        setTimeout(() => {
-          const newBlurEffect = setInterval(() => {
-            setBlurAmount(prev => (prev === 0 ? 5 : 0))
-          }, currentInterval)
-          
-          // Clear this interval when component unmounts
-          return () => clearInterval(newBlurEffect)
-        }, currentInterval)
-      }
-    }, blurInterval)
+    // Blur/unblur effect with fixed 1 second interval
+    const blurTimer = setInterval(() => {
+      setBlurAmount(prev => (prev === 0 ? 5 : 0))
+    }, 1000)
 
-    // Navigate to main page when loading is complete
+    // Navigate to main page after 5 seconds
     const navigationTimer = setTimeout(() => {
       navigate('/')
-    }, 4000) // Adjust time as needed - currently set to 4 seconds
+    }, 10000)
 
     // Clean up all timers
     return () => {
       clearTimeout(logoTimer)
-      clearTimeout(textTimer)
-      clearInterval(loadingInterval)
+      clearTimeout(taglineTimer)
+      clearInterval(indicatorInterval)
+      clearInterval(blurTimer)
       clearTimeout(navigationTimer)
-      clearInterval(blurEffect)
     }
-  }, [navigate, blurInterval])
+  }, [navigate])
+
+  // Generate loading indicator dots
+  const renderLoadingIndicator = () => {
+    return (
+      <div className="loading-dots">
+        {[0, 1, 2, 3].map(index => (
+          <div 
+            key={index} 
+            className="dot"
+            style={{
+              opacity: index <= indicatorProgress ? 1 : 0.3,
+              transform: index <= indicatorProgress ? 'scale(1.2)' : 'scale(1)',
+              transition: 'all 0.3s ease'
+            }}
+          />
+        ))}
+      </div>
+    )
+  }
 
   return (
-    <div style={{ 
-      backgroundColor: '#0a0a18', 
-      minHeight: '100vh', 
-      display: 'flex',
-      flexDirection: 'column',
-      color: 'white'
-    }}>
-      <div style={{ position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+    <div className="loading-screen">
+      <div className="loading-container">
         {/* Background light rays */}
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+        <div className="background-rays-container">
           <LightRays
-            raysOrigin="top-center"
+            raysOrigin="center"
             raysColor="#ffffff"
-            raysSpeed={1.5} // Slightly faster for loading screen
-            lightSpread={1.2}
-            rayLength={1.8}
-            followMouse={false} // Disable mouse following during loading
+            raysSpeed={1.2}
+            lightSpread={1.5}
+            rayLength={2}
+            followMouse={false}
             mouseInfluence={0}
-            noiseAmount={0.08} // More noise for dynamic effect
-            distortion={0.05} // More distortion
+            noiseAmount={0.06}
+            distortion={0.04}
             pulsating={true}
-            fadeDistance={1.2}
-            saturation={0.5}
+            fadeDistance={1.5}
+            saturation={0.6}
             className="background-rays"
           />
         </div>
         
-        {/* Logo in center with fade-in effect */}
-        <div style={{ 
-          position: 'absolute', 
-          top: 0, 
-          left: 0, 
-          width: '100%', 
-          height: '100%', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          flexDirection: 'column',
-          zIndex: 1,
-          pointerEvents: 'none',
-          transition: 'opacity 1s ease-in-out'
-        }}>
-          <img 
-            src={genniralLogo} 
-            alt="Genniral Logo" 
-            style={{ 
-              maxWidth: '400px', 
-              width: '40%',
-              opacity: logoOpacity,
-              transition: 'all 0.8s ease-in-out',
-              animation: 'pulse 2s infinite ease-in-out',
-              filter: `blur(${blurAmount}px)` // Apply dynamic blur effect
-            }} 
-          />
+        {/* Organization info positioned above the logo */}
+        {taglineVisible && (
+          <div className="top-tagline-container">
+            <div className="organization">STUDENTS ASSOCIATION</div>
+            <div className="kpriet">KPRIET</div>
+          </div>
+        )}
+        
+        {/* Content container */}
+        <div className="content-container">
+          {/* Logo with blur effect */}
+          <div className="logo-container">
+            <img 
+              src={genniralLogo} 
+              alt="Genniral Logo" 
+              style={{ 
+                maxWidth: '450px', 
+                width: '70%',
+                opacity: logoOpacity,
+                transition: 'filter 0.5s ease-in-out',
+                animation: 'logoPulse 3s infinite ease-in-out',
+                filter: `blur(${blurAmount}px)` // Apply dynamic blur effect
+              }} 
+            />
+          </div>
           
-          {/* Loading text appears after logo */}
-          {textVisible && (
-            <div style={{ 
-              marginTop: '50px', 
-              textAlign: 'center',
-              animation: 'fadeIn 1s forwards'
-            }}>
-              <div style={{ fontSize: '1.5rem', letterSpacing: '2px', marginBottom: '15px' }}>
-                INITIALIZING
-              </div>
-              
-              {/* Progress bar */}
-              <div style={{ 
-                width: '300px', 
-                height: '4px', 
-                background: 'rgba(255,255,255,0.1)', 
-                borderRadius: '2px',
-                overflow: 'hidden'
-              }}>
-                <div style={{ 
-                  height: '100%', 
-                  width: `${loadingProgress}%`, 
-                  background: 'rgba(255,255,255,0.7)',
-                  transition: 'width 0.4s ease-out',
-                  boxShadow: '0 0 10px rgba(255,255,255,0.7)'
-                }} />
-              </div>
-              
-              {/* Progress percentage */}
-              <div style={{ 
-                marginTop: '10px', 
-                fontSize: '14px',
-                opacity: 0.8
-              }}>
-                {Math.round(loadingProgress)}%
-              </div>
+          {/* Department information below logo */}
+          {taglineVisible && (
+            <div className="tagline-container">
+              <div className="department">Department of CSE</div>
+              {renderLoadingIndicator()}
             </div>
           )}
         </div>
       </div>
+
+      {/* Add styles */}
+      <style>{`
+        .loading-screen {
+          background: radial-gradient(circle at center, #111133 0%, #0a0a18 70%, #050510 100%);
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          color: white;
+        }
+        
+        .loading-container {
+          position: relative;
+          overflow: hidden;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+        
+        .background-rays-container {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+        }
+        
+        .content-container {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          z-index: 1;
+          pointer-events: none;
+        }
+        
+        .top-tagline-container {
+          position: absolute;
+          top: 15%;
+          left: 0;
+          width: 100%;
+          text-align: center;
+          animation: fadeInDown 1s forwards;
+          z-index: 2;
+        }
+        
+        .logo-container {
+          margin-bottom: 30px;
+          position: relative;
+          background: transparent;
+          display: flex;
+          justify-content: center;
+          width: 100%;
+        }
+        
+        .tagline-container {
+          text-align: center;
+          animation: fadeInUp 1s forwards;
+          margin-top: 20px;
+        }
+        
+        .organization {
+          font-size: 1.5rem;
+          letter-spacing: 4px;
+          font-weight: 600;
+          margin-bottom: 10px;
+          color: rgba(255, 255, 255, 0.95);
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+        }
+        
+        .kpriet {
+          font-size: 2rem;
+          letter-spacing: 6px;
+          font-weight: 700;
+          margin-bottom: 10px;
+          color: rgba(255, 255, 255, 1);
+          text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+        
+        .department {
+          font-size: 1.4rem;
+          letter-spacing: 2px;
+          font-weight: 300;
+          margin-bottom: 25px;
+          color: rgba(255, 255, 255, 0.9);
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+        }
+        
+        .loading-dots {
+          display: flex;
+          justify-content: center;
+          gap: 12px;
+          margin-top: 10px;
+        }
+        
+        .dot {
+          width: 8px;
+          height: 8px;
+          background-color: rgba(255, 255, 255, 0.8);
+          border-radius: 50%;
+          box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+        }
+        
+        @keyframes logoPulse {
+          0% { opacity: ${logoOpacity}; }
+          50% { opacity: ${Math.max(0.7, logoOpacity - 0.3)}; }
+          100% { opacity: ${logoOpacity}; }
+        }
+        
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInDown {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   )
 }
-
-// Add these CSS animations to your App.css file
-const styles = `
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.03); }
-  100% { transform: scale(1); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-`;
-
-// Include this style tag
-document.head.insertAdjacentHTML('beforeend', `<style>${styles}</style>`);
 
 export default LoadingScreen
