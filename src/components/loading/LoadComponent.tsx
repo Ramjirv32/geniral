@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './App.css'
-import LightRays from './LightRays'
-import genniralLogo from './assets/logo.png'
+import { LightRays } from '.'
+// We'll use a direct path to the logo in the root directory since we know it exists there
+import genniralLogo from '/logo.png'
 
-function LoadingScreen() {
+function LoadComponent() {
   const navigate = useNavigate()
   const [logoOpacity, setLogoOpacity] = useState(0)
   const [blurAmount, setBlurAmount] = useState(5)
@@ -12,32 +12,26 @@ function LoadingScreen() {
   const [indicatorProgress, setIndicatorProgress] = useState(0)
 
   useEffect(() => {
-    // Fade in logo animation
     const logoTimer = setTimeout(() => {
       setLogoOpacity(1)
     }, 300)
 
-    // Show tagline after logo appears
     const taglineTimer = setTimeout(() => {
       setTaglineVisible(true)
     }, 1200)
 
-    // Animate indicator dots
     const indicatorInterval = setInterval(() => {
       setIndicatorProgress(prev => (prev + 1) % 4)
     }, 500)
 
-    // Blur/unblur effect with fixed 1 second interval
     const blurTimer = setInterval(() => {
       setBlurAmount(prev => (prev === 0 ? 5 : 0))
     }, 1000)
 
-    // Navigate to main page after 5 seconds
     const navigationTimer = setTimeout(() => {
       navigate('/')
-    }, 10000)
+    }, 4000)
 
-    // Clean up all timers
     return () => {
       clearTimeout(logoTimer)
       clearTimeout(taglineTimer)
@@ -47,7 +41,6 @@ function LoadingScreen() {
     }
   }, [navigate])
 
-  // Generate loading indicator dots
   const renderLoadingIndicator = () => {
     return (
       <div className="loading-dots">
@@ -69,10 +62,8 @@ function LoadingScreen() {
   return (
     <div className="loading-screen">
       <div className="loading-container">
-        {/* Background light rays */}
         <div className="background-rays-container">
           <LightRays
-            raysOrigin="center"
             raysColor="#ffffff"
             raysSpeed={1.2}
             lightSpread={1.5}
@@ -88,7 +79,6 @@ function LoadingScreen() {
           />
         </div>
         
-        {/* Organization info positioned above the logo */}
         {taglineVisible && (
           <div className="top-tagline-container">
             <div className="organization">STUDENTS ASSOCIATION</div>
@@ -96,9 +86,7 @@ function LoadingScreen() {
           </div>
         )}
         
-        {/* Content container */}
         <div className="content-container">
-          {/* Logo with blur effect */}
           <div className="logo-container">
             <img 
               src={genniralLogo} 
@@ -109,12 +97,11 @@ function LoadingScreen() {
                 opacity: logoOpacity,
                 transition: 'filter 0.5s ease-in-out',
                 animation: 'logoPulse 3s infinite ease-in-out',
-                filter: `blur(${blurAmount}px)` // Apply dynamic blur effect
+                filter: `blur(${blurAmount}px)` 
               }} 
             />
           </div>
           
-          {/* Department information below logo */}
           {taglineVisible && (
             <div className="tagline-container">
               <div className="department">Department of CSE</div>
@@ -124,7 +111,6 @@ function LoadingScreen() {
         </div>
       </div>
 
-      {/* Add styles */}
       <style>{`
         .loading-screen {
           background: radial-gradient(circle at center, #111133 0%, #0a0a18 70%, #050510 100%);
@@ -255,4 +241,4 @@ function LoadingScreen() {
   )
 }
 
-export default LoadingScreen
+export default LoadComponent

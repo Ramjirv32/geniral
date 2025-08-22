@@ -1,4 +1,3 @@
-// filepath: /home/ramji/Desktop/Geniral/one/src/HomePage.tsx
 import React from 'react'
 
 function HomePage() {
@@ -12,7 +11,6 @@ function HomePage() {
       justifyContent: 'center'
     }}>
       <h1>Welcome to Genniral</h1>
-      {/* Your main site content here */}
     </div>
   )
 }

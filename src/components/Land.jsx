@@ -3,43 +3,9 @@ import { Renderer, Program, Triangle, Mesh, Geometry } from "ogl";
 
 const DEFAULT_COLOR = "#ffffff";
 
-type OriginType = "top-left" | "top-center" | "top-right" | "left" | "right" | "bottom-left" | "bottom-center" | "bottom-right";
 
-interface LightRaysProps {
-  raysOrigin?: OriginType;
-  raysColor?: string;
-  raysSpeed?: number;
-  lightSpread?: number;
-  rayLength?: number;
-  pulsating?: boolean;
-  fadeDistance?: number;
-  saturation?: number;
-  followMouse?: boolean;
-  mouseInfluence?: number;
-  noiseAmount?: number;
-  distortion?: number;
-  className?: string;
-}
 
-type UniformsType = {
-  iTime: { value: number };
-  iResolution: { value: number[] };
-  rayPos: { value: number[] };
-  rayDir: { value: number[] };
-  raysColor: { value: number[] };
-  raysSpeed: { value: number };
-  lightSpread: { value: number };
-  rayLength: { value: number };
-  pulsating: { value: number };
-  fadeDistance: { value: number };
-  saturation: { value: number };
-  mousePos: { value: number[] };
-  mouseInfluence: { value: number };
-  noiseAmount: { value: number };
-  distortion: { value: number };
-};
-
-const hexToRgb = (hex: string) => {
+const hexToRgb = (hex) => {
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return m
     ? [
@@ -50,7 +16,7 @@ const hexToRgb = (hex: string) => {
     : [1, 1, 1];
 };
 
-const getAnchorAndDir = (origin: OriginType, w: number, h: number) => {
+const getAnchorAndDir = (origin, w, h) => {
   const outside = 0.2;
   switch (origin) {
     case "top-left":
@@ -90,7 +56,7 @@ const getAnchorAndDir = (origin: OriginType, w: number, h: number) => {
     default: // "top-center"
       return { anchor: [0.5 * w, -outside * h], dir: [0, 1] };
   }
-};
+
 
 const LightRays = ({
   raysOrigin = "top-center",

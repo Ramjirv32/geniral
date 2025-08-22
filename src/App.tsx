@@ -1,17 +1,15 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import App from "./Load";         // Loading screen
-import HomePage from "./Home"; // Your main homepage
+import { Routes, Route, Navigate } from "react-router-dom";
+import { LoadComponent } from "./components/loading";         
+import HomePage from "./pages/Home"; 
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/loading" element={<App />} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="*" element={<Navigate to="/loading" />} />
-      </Routes>
-    </BrowserRouter>
-  </React.StrictMode>
-);
+function App() {
+  return (
+    <Routes>
+      <Route path="/loading" element={<LoadComponent />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="*" element={<Navigate to="/loading" />} />
+    </Routes>
+  );
+}
+
+export default App;
