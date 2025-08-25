@@ -1,4 +1,4 @@
-import { LightRays } from '../components/loading'
+import { LightRays } from '../../components/loading'
 
 function HomePage() {
   return (
