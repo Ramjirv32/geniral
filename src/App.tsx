@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LoadComponent } from "./components/loading";         
 import HomePage from "./pages/Home"; 
-
+import "./index.css"
 function App() {
   return (
     <Routes>

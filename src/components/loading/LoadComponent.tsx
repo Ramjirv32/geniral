@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LightRays } from '.'
-// We'll use a direct path to the logo in the root directory since we know it exists there
 import genniralLogo from '/logo.png'
 
 function LoadComponent() {
